@@ -70,7 +70,7 @@ function moveToPlayerOnePlacementPrep() {
         alert("regular game");
         document.getElementById("placeshipsbtn").addEventListener("click", moveToPlayerTwoPlacementPrep);
     }
-    if (difficulty == 0)
+    if (difficulty != -1)
     {
         alert("Move onto AI mans");
         document.getElementById("placeshipsbtn").addEventListener("click", AIShipPlacement);
@@ -101,7 +101,6 @@ function moveToPlayerTwoPlacementPrep() {
 /*----------------------------------------------------------------------------------------------------------------*/
 function AIShipPlacement()
 {
-    alert("Hello I am AI.");
     document.getElementById("shipplacement").style.display = "none";
     document.getElementById("placeships").style.display = "none";
     document.getElementById("shipprep").style.display = "block";
@@ -112,7 +111,6 @@ function AIShipPlacement()
 }
 function place_ai_ships()
 {
-    alert("Placing AI Ships")
     let currBoard = 2;
     game.isAiMode(currBoard);
     //Iterate through ships
@@ -151,7 +149,6 @@ function place_ai_ships()
                 break;
               }
             }
-            console.log("Checking ship: "+i+" index: "+j);
           }
         }
         //horizontal
@@ -166,7 +163,6 @@ function place_ai_ships()
               }
               catch(error)
               {
-                console.log(error);
                 valid = false;
               }
               finally
@@ -176,14 +172,12 @@ function place_ai_ships()
                   break;
                 }
               }
-              console.log("Checking ship: "+i+" index: "+j);
               //If any placement is invalid, break
           }
         }
       }
       while(valid == false)
       //Iterate through each ships length to place on the board
-      console.log("Column: "+column+" row: "+row+" direction: "+direction+" length: "+i);
       for(let j=0; j<i; j++)
       {
         //Vertical placement
@@ -201,9 +195,51 @@ function place_ai_ships()
       }
     }
     game.printBoard(2);
-   let test = game.board2.isValid(numberOfShips);
-   alert(test);
+    for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 10; j++) {
+            let cell = document.getElementById(getId(1, i, j));
+            //Disable editing of player 1's board
+            cell.removeEventListener("click", editShips);
+        }
+    }
+    document.getElementById("shipprep").style.display = "none";
+    document.getElementById("gobtn2").style.display = "none";
+    document.getElementById("prepplayer").style.display = "none";
+    document.getElementById("shipplacement").style.display = "block";
+    if(difficulty==0)
+    {
+        goToEasyMode();
+    }
+    if(difficulty==1)
+    {
+        goToNormalMode();
+    }
+    if(diffculty==2)
+    {
+        goToHardMode();
+    }
+
+
+
 }
+
+
+function goToNormalMode(){
+    for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 10; j++) {
+            let cell2 = document.getElementById(getId(2, i, j));
+            cell2.addEventListener("click", fire);
+        }
+    }
+    loadBoards(1);
+    turnTracker = new Turn(2);
+    playerFirePrep();
+}
+
+
+
+
+
 //Goes to player two placement after disabling board of player one
 function moveToPlayerTwoPlacement() {
     document.getElementById("gobtn2").style.display = "none";
@@ -399,12 +435,22 @@ function playerFirePrep() {
     } else {
         document.getElementById("statistics").style.display = "none";
         let player = turnTracker.nextTurn();
+        alert(player);
         //shows fire prep phase for next player
         document.getElementById("shipplacement").style.display = "none";
         document.getElementById("shipprep").style.display = "block";
         document.getElementById("gobtn").style.display = "inline-block";
         document.getElementById("gobtn").removeEventListener("click", moveToPlayerOnePlacement);
-        document.getElementById("gobtn").addEventListener("click", playerFire);
+        if(difficulty==1 && player==2)
+        {
+            document.getElementById("gobtn").addEventListener("click", aiNormalFire);
+            document.getElementById("promptforward").style.display = "none";
+            document.getElementById("prepplayer").style.display = "none";
+        }
+        else
+        {
+            document.getElementById("gobtn").addEventListener("click", playerFire);
+        }
         document.getElementById("promptforward").innerHTML = "Ready to continue?";
         document.getElementById("prepplayer").innerHTML = `Player ${player}`;
         document.getElementById("endTurn").style.display = "none";
@@ -412,17 +458,49 @@ function playerFirePrep() {
     }
 }
 
+function aiNormalFire(){
+    alert("hi");
+    document.getElementById("shipplacement").style.display = "block";
+    document.getElementById("statistics").style.display = "block";
+    document.getElementById("shipprep").style.display = "none";
+    document.getElementById("gobtn").style.display = "none";
+    document.getElementById("endTurn").style.display = "none";
+
+    x = Math.floor(Math.random() * 10);
+    y = Math.floor(Math.random() * 10);
+    alert("x is "+x+",y is "+y+",fired is ");
+    if (!fired) {
+        //fires and plays a sound depending on fire success
+        if(game.firedAt(1,x,y))
+        {
+          hit_snd.play();
+        }
+        else
+        {
+          miss_snd.play();
+        }
+        //update logic
+        fired = true;
+        //update boards
+        loadBoards(turnTracker.getTurn());
+    }
+    document.getElementById("endTurn").style.display = "block";
+    document.getElementById("endTurnBtn").addEventListener("click", playerFirePrep);
+    
+}
+
+
 //Depending on who is currently the player, gives events to the other board
 function playerFire() {
-    let player = turnTracker.getTurn();
-    let opponent = player == 1 ? 2 : 1;
-    //show board
     document.getElementById("shipplacement").style.display = "block";
     document.getElementById("statistics").style.display = "block";
     document.getElementById("shipprep").style.display = "none";
     document.getElementById("gobtn").style.display = "none";
     document.getElementById("endTurn").style.display = "none";
     showTurn(player);
+    let player = turnTracker.getTurn();
+    let opponent = player == 1 ? 2 : 1;
+    //show board
     loadBoards(player);
     //make sure player can't attack self
     for (let i = 0; i < 10; i++) {
