@@ -203,22 +203,6 @@ function AiPlacement()
             cell.removeEventListener("click", editShips);
         }
     }
-    if(difficulty == 0)
-    {
-        alert("easy"); //delete later
-        start.addEventListener("click", gameRunner);
-    }
-    if (difficulty == 1)
-    {
-        alert("medium");
-        start.addEventListener("click", gameRunner);
-    }
-    if(difficulty == 2)
-    {
-        alert("hard");
-        start.addEventListener("click", gameRunnerHard);
-    }
-     
    }
 }
 //Goes to player two placement after disabling board of player one
