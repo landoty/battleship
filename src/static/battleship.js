@@ -294,6 +294,7 @@ function loadBoards(player) {
     const opponent = player == 1 ? 2 : 1;
     const playerBoard = game.getBoard(player);
     const opponentBoard = game.getBoard(opponent, hidden=true);
+    const aiBoard = game.getBoard(2,hidden=true);
     for (let i = 0; i < 10; i++) {
         for (let j = 0; j < 10; j++) {
             let playerCell = document.getElementById(getId(player, i, j));
@@ -387,7 +388,7 @@ function fire() {
 }
 
 function aiFire(difficulty)
-{
+{  
   let row, col;
   //deactivates clicking on the player's board while AI is firing
   for (let i = 0; i < 10; i++) {
@@ -396,6 +397,7 @@ function aiFire(difficulty)
           aiBoard.style.pointerEvents = 'none';
       }
   }
+  
   if(difficulty == 0)
   {
     row = Math.floor(Math.random() * 10);
@@ -455,13 +457,15 @@ function aiFire(difficulty)
       //update logic
       fired = true;
       //update boards
-      loadBoards(turnTracker.getTurn());
+
+      loadBoards(1);
       //disable click feature on the cell
       this.removeEventListener("click", fire);
   }
   //show button to continue
   document.getElementById("endTurn").style.display = "block";
   document.getElementById("endTurnBtn").addEventListener("click", playerFirePrep);
+  
   if(turnTracker.getTurn() == 1)      //updates when user fires
   {
       statUpdater(1);
