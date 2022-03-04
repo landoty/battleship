@@ -221,24 +221,6 @@ function AiPlacement()
      
    }
 }
-function gameRunnerHard()
-{
-    document.getElementById("placeships").style.display = "none";
-    document.getElementById("startgame").style.display = "none";
-    for (let i = 0; i < 10; i++) {
-        for (let j = 0; j < 10; j++) {
-            let cell2 = document.getElementById(getId(2, i, j));
-            let cell1 = document.getElementById(getId(1, i, j));
-            //Disable editing of player 2's board
-            cell2.removeEventListener("click", editShips);
-            cell1.addEventListener("click", fire);
-            cell2.addEventListener("click", fire);
-             
-        }
-    }
-    turnTracker = new Turn(2);
-    playerFirePrep();
-}
 //Goes to player two placement after disabling board of player one
 function moveToPlayerTwoPlacement() {
     document.getElementById("gobtn2").style.display = "none";
@@ -442,6 +424,7 @@ function aiFire(difficulty)
   else if(difficulty == 2)
   {
     alert("HARD");
+    
   }
 }
 
