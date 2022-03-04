@@ -28,12 +28,12 @@ function sound(src) {
     this.sound.pause();
   }
 }
-
+//changes game state to AI
 function moveToAISelect(){
     document.getElementById("startmenu").style.display = "none"
     document.getElementById("aiselect").style.display = "block";
 }
-
+//allows user to select the 3 types of difficulty and assign a value to change to the difficulty
 function moveToDifficultySelect(){
     document.getElementById("aiselect").style.display = "none";
     document.getElementById("difficultyselect").style.display = "block";
@@ -99,6 +99,7 @@ function moveToPlayerTwoPlacementPrep() {
     document.getElementById("prepplayer").innerHTML = "Player 2";
 }
 /*----------------------------------------------------------------------------------------------------------------*/
+//Allows for ai to randomly place boards and confirmation to move to ai randomly placing ships
 function moveToAIPlacement()
 {
     document.getElementById("shipplacement").style.display = "none";
@@ -195,6 +196,7 @@ function AiPlacement()
         }
       }
     }
+    //if the ship test placements are valid continue the game with the placed ships
    let test = game.board2.isValid(numberOfShips);
    if(test)
    {
@@ -397,18 +399,20 @@ function aiFire(difficulty)
           aiBoard.style.pointerEvents = 'none';
       }
   }
-  
+  //starts the easy difficulty where the ai would just randomly fire on the board until it hits a ship
   if(difficulty == 0)
   {
     row = Math.floor(Math.random() * 10);
     col = Math.floor(Math.random() * 10);
   }
+  //starts the medium difficulty where the ai would randomly fire and if it detects a ship start firing top right down left and continue until ship is destroyed and start randomly firing again
   else if(difficulty == 1)
   {
     coords = _mediumDifficultyMove(aiMedium);
     row = coords['row'];
     col = coords['col'];
   }
+  //starts the hard difficulty where the ai would know where the player has placed ships and fire on them
   else if(difficulty == 2)
   {
     const aiBoard = game.getBoard(1,hidden=false);
@@ -456,8 +460,7 @@ function aiFire(difficulty)
       }
       //update logic
       fired = true;
-      //update boards
-
+      //update boards of only player 1 so they cannot see ai ship placement
       loadBoards(1);
       //disable click feature on the cell
       this.removeEventListener("click", fire);
