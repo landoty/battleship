@@ -424,8 +424,27 @@ function aiFire(difficulty)
   else if(difficulty == 2)
   {
     alert("HARD");
-    
-  }
+    x = Math.floor(Math.random() * 10);
+    y = Math.floor(Math.random() * 10);
+    alert("x is "+x+",y is "+y+",fired is ");
+    if (!fired) {
+        //fires and plays a sound depending on fire success
+        if(game.firedAt(1,x,y))
+        {
+          hit_snd.play();
+        }
+        else
+        {
+          miss_snd.play();
+        }
+        //update logic
+        fired = true;
+        //update boards
+        loadBoards(turnTracker.getTurn());
+    }
+    document.getElementById("endTurn").style.display = "block";
+    document.getElementById("endTurnBtn").addEventListener("click", playerFirePrep);
+}    
 }
 
 //Preps the players for firing
