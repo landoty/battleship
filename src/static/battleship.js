@@ -107,7 +107,7 @@ function moveToAIPlacement()
 function AiPlacement()
 {
     let currBoard = 2;
-    game.isAiMode(currBoard);
+    game.setAiMode(currBoard);
     //Iterate through ships
     for(let i=1; i<=numberOfShips; i++)
     {
@@ -421,6 +421,30 @@ function fire() {
     }
 }
 
+function aiFire(difficulty)
+{
+  alert("ai firing with: " + difficulty + "difficulty");
+  //deactivates clicking on the player's board while AI is firing
+  for (let i = 0; i < 10; i++) {
+      for (let j = 0; j < 10; j++) {
+          let aiBoard = document.getElementById(getId(1, i, j));
+          aiBoard.style.pointerEvents = 'none';
+      }
+  }
+  if(difficulty == 0)
+  {
+    alert("EASY");
+  }
+  else if(difficulty == 1)
+  {
+    alert("MEDIUM");
+  }
+  else if(difficulty == 2)
+  {
+    alert("HARD");
+  }
+}
+
 //Preps the players for firing
 function playerFirePrep() {
     if (game.isGameOver()) {
@@ -467,6 +491,11 @@ function playerFire() {
             cellP.style.pointerEvents = 'none';
             cellO.style.pointerEvents = 'auto';
         }
+    }
+    //Detect if the AI needs to fire or not
+    if(player == 2 && game.isAiGame(2))
+    {
+      aiFire(difficulty);
     }
     if(turnTracker.getTurn() == 1)          //Updates stats depending on which player's turn it is, updates when user clicks square to fire
     {
