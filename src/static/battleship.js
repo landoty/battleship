@@ -1,11 +1,16 @@
 /*----------------------------------------------------------------------------------------------------------------*/
 //Global variables that are used throughout the game
+let cheaterx = [];
+let cheese =0;
+let cheatery = [];
 let numberOfShips = 0;
 let difficulty = -1;
+let hardDiffIncrement = 0;
 var game = null;
 let turnTracker = null;
 let miss_snd = new sound("./static/miss.mp3")
 let hit_snd = new sound("./static/hit.mp3")
+let aiMediumData = {lastRow: null, lastCol: null, lastDir: ""}
 /*----------------------------------------------------------------------------------------------------------------*/
 //Funcionality to play sounds
 function sound(src) {
@@ -196,13 +201,7 @@ function AiPlacement()
      document.getElementById("gobtn2").style.display = "none";
      let start = document.getElementById("startgame")
      start.style.display = "block";
-     for (let i = 0; i < 10; i++) {
-        for (let j = 0; j < 10; j++) {
-            let cell = document.getElementById(getId(1, i, j));
-            //Disable editing of player 1's board
-            cell.removeEventListener("click", editShips);
-        }
-    }
+     start.addEventListener("click", gameRunner);
    }
 }
 //Goes to player two placement after disabling board of player one
@@ -268,12 +267,34 @@ function editShips() {
     } else if (game.isValidPlacement(currBoard, x, y)){
         this.className = "grid-item-ship";
         game.placeShip(currBoard, x, y);
+        cheaterx.push(x);
+        cheatery.push(y);
+        /*if(cheese==0)
+        {
+            cheaterx.push(x);
+            cheatery.push(y);
+            cheese++;
+        }
+        else if(cheese==1)
+        {
+            cheaterx.pop(x);
+            cheatery.pop(y);
+            cheese--;
+            if(cheese==0)
+            {
+                cheaterx.push(x);
+                cheatery.push(y);
+                cheese++;
+            }
+        }*/
     }
     if (game.isValid(currBoard)) {
         //Show placeships
+       
         document.getElementById("placeships").style.display = "block";
     } else {
         //Hide placeships
+ 
         document.getElementById("placeships").style.display = "none";
     }
 }
@@ -400,35 +421,75 @@ function aiFire(difficulty)
   if(difficulty == 0)
   {
     alert("EASY");
+    row = Math.floor(Math.random() * 10);
+    col = Math.floor(Math.random() * 10);
   }
   else if(difficulty == 1)
   {
+    /*
+      - Fires at random until a ship is hit, then
+      - Searches orthogonally adjacent for subsequent fires, and
+      - If all directions are checked, start firing at random again
+
+      - utilizes aiMediumData object declared globally in line 9
+    */
     alert("MEDIUM");
+    //No recent direction, fire random
+    /*if(aiMediumData.lastDir == "")
+    {
+      row = Math.floor(Math.random() * 10);
+      column = Math.floor(Math.random() * 10);
+    }
+    else
+    {
+      alert("not random")
+    }*/
   }
   else if(difficulty == 2)
   {
-    alert("HARD");
-    x = Math.floor(Math.random() * 10);
-    y = Math.floor(Math.random() * 10);
-    alert("x is "+x+",y is "+y+",fired is ");
-    if (!fired) {
-        //fires and plays a sound depending on fire success
-        if(game.firedAt(1,x,y))
-        {
-          hit_snd.play();
-        }
-        else
-        {
-          miss_snd.play();
-        }
-        //update logic
-        fired = true;
-        //update boards
-        loadBoards(turnTracker.getTurn());
-    }
-    document.getElementById("endTurn").style.display = "block";
-    document.getElementById("endTurnBtn").addEventListener("click", playerFirePrep);
-}    
+    alert("HARD");  
+     
+  let play1 =1;
+
+       while(game.isValidPlacement(1,cheaterx[hardDiffIncrement],cheatery[hardDiffIncrement])==false)
+       {
+        hardDiffIncrement++;
+       }
+       row = cheaterx[hardDiffIncrement];
+       col = cheatery[hardDiffIncrement];
+       hardDiffIncrement++;
+       console.log(hardDiffIncrement);
+   
+  }
+  //only fire once a turn
+  if (!fired) {
+      //fires and plays a sound depending on fire success
+      if(game.firedAt(1,row,col))
+      {
+        hit_snd.play();
+      }
+      else
+      {
+        miss_snd.play();
+      }
+      //update logic
+      fired = true;
+      //update boards
+      loadBoards(turnTracker.getTurn());
+      //disable click feature on the cell
+      this.removeEventListener("click", fire);
+  }
+  //show button to continue
+  document.getElementById("endTurn").style.display = "block";
+  document.getElementById("endTurnBtn").addEventListener("click", playerFirePrep);
+  if(turnTracker.getTurn() == 1)      //updates when user fires
+  {
+      statUpdater(1);
+  }
+  if(turnTracker.getTurn() == 2)
+  {
+      statUpdater(2);
+  }
 }
 
 //Preps the players for firing
