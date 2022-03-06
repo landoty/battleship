@@ -390,7 +390,7 @@ function fire() {
 }
 
 function aiFire(difficulty)
-{  
+{
   let row, col;
   //deactivates clicking on the player's board while AI is firing
   for (let i = 0; i < 10; i++) {
@@ -440,6 +440,7 @@ function aiFire(difficulty)
       if(game.firedAt(1,row,col))
       {
         hit_snd.play();
+        //For medium difficulty, update the aiMedium object to keep track of most recent hit
         if(difficulty==1)
         {
           aiMedium.hit = true;
@@ -451,11 +452,8 @@ function aiFire(difficulty)
       else
       {
         miss_snd.play();
-        //Go to next direction if between 0 and 2
+        //Cycle to the next direction if a hit has been encountered and all directions haven't been tried
         (aiMedium.hit == true && aiMedium.dir != 3) ? aiMedium.dir +=1 : null;
-        //Will restart cycling
-        //aiMedium.dir == 3 ? aiMedium.hit = false : null;
-        //aiMedium.dir == 3 ? aiMedium.dir = 0 : null;
       }
       //update logic
       fired = true;
@@ -514,7 +512,6 @@ function _mediumDifficultyMove(move)
       else
       {
         //failed up, check right
-      //  move.col += 1;
         move.dir +=1;
         return _mediumDifficultyMove(move);
       }
@@ -529,7 +526,6 @@ function _mediumDifficultyMove(move)
       else
       {
         //failed right, check down
-      //  move.row += 1;
         move.dir +=1;
         return _mediumDifficultyMove(move);
       }
@@ -544,7 +540,6 @@ function _mediumDifficultyMove(move)
       else
       {
         //failed down, check left
-      //  move.col -= 1;
         move.dir +=1;
         return _mediumDifficultyMove(move);
       }
@@ -571,9 +566,11 @@ function _mediumDifficultyMove(move)
         }
         else
         {
+          //No valid moves, set hit to false and dir to 0 to generate new random coordinates
           move.hit = false;
           move.dir = 0;
         }
+        //In all cases, must recurse at least one more time
         return _mediumDifficultyMove(move);
       }
     }
@@ -586,10 +583,12 @@ function _mediumDifficultyMove(move)
 function _isHit(row, col)
 {
   const aiBoard = game.getBoard(1,hidden=true);
+  //Coordinates out of board boundaries
     if(row > 9 || row < 0 || col > 9 || col < 0)
     {
       return false;
     }
+  //Hit not sunk
     else if(aiBoard[row][col] == -2)
     {
       return true;
@@ -608,10 +607,12 @@ function _isValidFire(row,col)
   const aiBoard = game.getBoard(1, hidden=true);
   try
   {
+    //Coordinates out of board boundaries
     if(row < 0 || row > 9 || col < 0 || col > 9)
     {
       return false;
     }
+    //Coordinate has either: been fired on, hit, or sunk
     else if(aiBoard[row][col] == -1 || aiBoard[row][col] == -2 || aiBoard[row][col] == -3)
     {
       return false;
@@ -622,6 +623,7 @@ function _isValidFire(row,col)
     console.log(error + " : AI trying new firing coordinates")
     return false;
   }
+  //Return true in all other cases
   return true;
 }
 
