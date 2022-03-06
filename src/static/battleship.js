@@ -417,14 +417,13 @@ function aiFire(difficulty)
   {
     const aiBoard = game.getBoard(1,hidden=false);
     let stop = false;
-    let counter = 0;
+  //Nested for loop checks ai board for any ships, if found, then it sets coordinates to fire, then breaks out of loop
     for (let i = 0; i < 10; i++) {
         for (let j = 0; j < 10; j++) {
             if(aiBoard[i][j] == 1)
             {
                 row = i;
                 col = j;
-                counter++
                 stop = true;
                 break;
             }
@@ -433,7 +432,7 @@ function aiFire(difficulty)
         {
             break;
         }
-    }   
+    }
   }
   //only fire once a turn
   if (!fired) {
@@ -468,7 +467,7 @@ function aiFire(difficulty)
   //show button to continue
   document.getElementById("endTurn").style.display = "block";
   document.getElementById("endTurnBtn").addEventListener("click", playerFirePrep);
-  
+
   if(turnTracker.getTurn() == 1)      //updates when user fires
   {
       statUpdater(1);
